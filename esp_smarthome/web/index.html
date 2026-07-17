@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Gwen Home</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+
+        <h1>GWEN HOME</h1>
+
+        <p>Smart Home Dashboard</p>
+
+    </div>
+
+    <div id="connection">
+
+        <span class="dot"></span>
+
+        <span id="connectionText">
+
+            CONNECTED
+
+        </span>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <!-- ================= MAIN POWER ================= -->
+
+    <section class="card mainPower">
+
+        <h2>Master Switch</h2>
+
+        <div class="mcbBox">
+
+            <div
+                id="mcbLever"
+                class="mcbLever">
+            </div>
+
+        </div>
+
+        <label class="switch">
+
+            <input
+                id="mainSwitch"
+                type="checkbox">
+
+            <span class="slider"></span>
+
+        </label>
+
+    </section>
+
+
+    <!-- ================= TUBE ================= -->
+
+    <section class="card">
+
+        <h2>Tube Light</h2>
+
+        <div class="tubeContainer">
+
+            <div
+                id="tube"
+                class="tube">
+            </div>
+
+        </div>
+
+        <label class="switch">
+
+            <input
+                id="tubeSwitch"
+                type="checkbox">
+
+            <span class="slider"></span>
+
+        </label>
+
+    </section>
+
+
+    <!-- ================= PLUG ================= -->
+
+    <section class="card">
+
+        <h2>Plug Point</h2>
+
+        <div class="plugContainer">
+
+            <div class="socket"></div>
+
+            <div
+                id="plug"
+                class="plug">
+
+            </div>
+
+        </div>
+
+        <label class="switch">
+
+            <input
+                id="plugSwitch"
+                type="checkbox">
+
+            <span class="slider"></span>
+
+        </label>
+
+    </section>
+
+
+    <!-- ================= FAN ================= -->
+
+    <section class="card">
+
+        <h2>Fan</h2>
+
+        <div class="fanHolder">
+
+            <div
+                id="fan"
+                class="fan">
+
+                <div class="blade b1"></div>
+                <div class="blade b2"></div>
+                <div class="blade b3"></div>
+
+                <div class="hub"></div>
+
+            </div>
+
+        </div>
+
+        <label class="switch">
+
+            <input
+                id="fanSwitch"
+                type="checkbox">
+
+            <span class="slider"></span>
+
+        </label>
+
+        <div class="speedBox">
+
+            <label>
+
+                Speed
+
+                <span id="speedValue">
+
+                    0
+
+                </span>
+
+            </label>
+
+            <input
+
+                id="speedSlider"
+
+                type="range"
+
+                min="0"
+
+                max="100"
+
+                value="0">
+
+        </div>
+
+    </section>
+
+</main>
+
+<!-- ================= MINI COOLER ================= -->
+<div class="mini-cooler-container">
+    <div class="cooler-switch">
+        <div class="cooler-thumb pos-2" id="coolerThumb"></div>
+        <div class="cooler-option" onclick="setCooler(0)" id="cOpt0">OFF</div>
+        <div class="cooler-option" onclick="setCooler(1)" id="cOpt1">ON</div>
+        <div class="cooler-option active" onclick="setCooler(2)" id="cOpt2">AUTO</div>
+    </div>
+    <div class="cooler-text" id="coolerText">FAN: AUTO</div>
+</div>
+
+<script src="app.js"></script>
+
+</body>
+
+</html>

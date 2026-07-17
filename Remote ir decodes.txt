@@ -1,0 +1,7 @@
+1            =  1FE50AF
+2            =  1FED827
+3            =  1FEF807
+4            =  1FE30CF
+vol-       =  1FEA05F
+vol+     =  1FE609F
+power  =  1FE48B7
