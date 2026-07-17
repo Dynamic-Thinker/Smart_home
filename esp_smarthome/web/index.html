@@ -193,18 +193,19 @@
 
     </section>
 
+    <!-- ================= MINI COOLER ================= -->
+    <div class="mini-cooler-container">
+        <div class="cooler-switch">
+            <div class="cooler-thumb pos-2" id="coolerThumb"></div>
+            <div class="cooler-option" onclick="setCooler(0)" id="cOpt0">OFF</div>
+            <div class="cooler-option" onclick="setCooler(1)" id="cOpt1">ON</div>
+            <div class="cooler-option active" onclick="setCooler(2)" id="cOpt2">AUTO</div>
+        </div>
+        <div class="cooler-text" id="coolerText">FAN: AUTO</div>
+    </div>
+
 </main>
 
-<!-- ================= MINI COOLER ================= -->
-<div class="mini-cooler-container">
-    <div class="cooler-switch">
-        <div class="cooler-thumb pos-2" id="coolerThumb"></div>
-        <div class="cooler-option" onclick="setCooler(0)" id="cOpt0">OFF</div>
-        <div class="cooler-option" onclick="setCooler(1)" id="cOpt1">ON</div>
-        <div class="cooler-option active" onclick="setCooler(2)" id="cOpt2">AUTO</div>
-    </div>
-    <div class="cooler-text" id="coolerText">FAN: AUTO</div>
-</div>
 
 <script src="app.js"></script>
 

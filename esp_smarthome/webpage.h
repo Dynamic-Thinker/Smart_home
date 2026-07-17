@@ -56,6 +56,8 @@ body{
 
     min-height:100vh;
 
+    position: relative;
+
 }
 
 
@@ -811,10 +813,9 @@ transform:scale(.95);
    =========================================================== */
 
 .mini-cooler-container{
-    position:fixed;
-    bottom:15px;
-    right:15px;
-    z-index:100;
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-top: 10px;
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -876,6 +877,19 @@ transform:scale(.95);
     font-weight:bold;
     color:#aaa;
     letter-spacing:1px;
+}
+
+/* ===========================================================
+   DESKTOP (PC) OVERRIDES
+   =========================================================== */
+@media(min-width: 901px) {
+    .mini-cooler-container {
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        margin-top: 0;
+        z-index: 100;
+    }
 }
 
 /* ===========================================================
@@ -1093,18 +1107,19 @@ grid-column:auto;
 
     </section>
 
+    <!-- ================= MINI COOLER ================= -->
+    <div class="mini-cooler-container">
+        <div class="cooler-switch">
+            <div class="cooler-thumb pos-2" id="coolerThumb"></div>
+            <div class="cooler-option" onclick="setCooler(0)" id="cOpt0">OFF</div>
+            <div class="cooler-option" onclick="setCooler(1)" id="cOpt1">ON</div>
+            <div class="cooler-option active" onclick="setCooler(2)" id="cOpt2">AUTO</div>
+        </div>
+        <div class="cooler-text" id="coolerText">FAN: AUTO</div>
+    </div>
+
 </main>
 
-<!-- ================= MINI COOLER ================= -->
-<div class="mini-cooler-container">
-    <div class="cooler-switch">
-        <div class="cooler-thumb pos-2" id="coolerThumb"></div>
-        <div class="cooler-option" onclick="setCooler(0)" id="cOpt0">OFF</div>
-        <div class="cooler-option" onclick="setCooler(1)" id="cOpt1">ON</div>
-        <div class="cooler-option active" onclick="setCooler(2)" id="cOpt2">AUTO</div>
-    </div>
-    <div class="cooler-text" id="coolerText">FAN: AUTO</div>
-</div>
 
 <script>
 /******************************************************************************
