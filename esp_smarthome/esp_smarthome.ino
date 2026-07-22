@@ -107,15 +107,17 @@ void connectWiFi()
     while(WiFi.status()!=WL_CONNECTED)
     {
         if (!sentConnecting) {
-            sendFullState();
+            Serial.println("W:0");
             sentConnecting = true;
         }
-        delay(500);
+        delay(1000);
     }
 
     wifiConnected = true;
 
-    //sendFullState();
+    Serial.print("W:");
+    Serial.println(WiFi.localIP().toString());
+    delay(1000);
 }
 
 /**************************************************************************
@@ -130,14 +132,17 @@ void checkWiFi()
     {
         if (!wifiConnected) {
             wifiConnected = true;
-            //sendFullState();
+            Serial.print("W:");
+            Serial.println(WiFi.localIP().toString());
+            delay(1000);
+            requestCurrentState();
         }
         return;
     }
 
     if (wifiConnected) {
         wifiConnected = false;
-        sendFullState();
+        Serial.println("W:0");
     }
     
 

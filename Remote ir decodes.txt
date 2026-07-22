@@ -1,3 +1,17 @@
+NEW REMOTE:
+
+1       =  E12440BF
+2       =  E12428D7
+3       =  E1246897
+4       =  E124B847
+MUTE    =  E124609F
+VOL+    =  E12458A7
+VOL-    =  E124A05F
+POWER   =  E12448B7
+
+
+OLD REMOTE:
+
 1            =  1FE50AF
 2            =  1FED827
 3            =  1FEF807

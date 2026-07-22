@@ -10,7 +10,8 @@ HomeState homeState =
     2 // Cooler: 2 = auto
 };
 
-String serialBuffer = "";
+char serialBuffer[64];
+int serialIndex = 0;
 
 bool stateUpdated = false;
 
@@ -18,7 +19,6 @@ bool stateUpdated = false;
 
 void initializeSerial()
 {
-    serialBuffer.reserve(64);
 }
 
 /********************************************************************/
@@ -34,12 +34,15 @@ void serialLoop()
 
         if (c == '\n')
         {
+            serialBuffer[serialIndex] = '\0';
             parseSerialLine(serialBuffer);
-            serialBuffer = "";
+            serialIndex = 0;
         }
         else
         {
-            serialBuffer += c;
+            if (serialIndex < 63) {
+                serialBuffer[serialIndex++] = c;
+            }
         }
     }
 }
@@ -73,17 +76,9 @@ void sendFullState()
     Serial.print(",F:");
     Serial.print(homeState.fan ? 1 : 0);
     Serial.print(",S:");
-    Serial.print(map(homeState.speed, 0, 100, 128, 0));
+    Serial.print((int)round(128.0 - (homeState.speed * 1.28)));
     Serial.print(",C:");
-    Serial.print(homeState.cooler);
-    Serial.print(",W:");
-    
-    extern bool wifiConnected;
-    if (wifiConnected) {
-        Serial.println(WiFi.localIP().toString());
-    } else {
-        Serial.println("0");
-    }
+    Serial.println(homeState.cooler);
 }
 
 /********************************************************************/
@@ -98,7 +93,10 @@ void toggleMainPower()
     homeState.mainPower = targetState;
     
     stateUpdated = true;
-    sendFullState();
+    Serial.print("T:"); Serial.print(targetState ? 1 : 0);
+    Serial.print(",P:"); Serial.print(targetState ? 1 : 0);
+    Serial.print(",F:"); Serial.print(targetState ? 1 : 0);
+    Serial.print('\n');
 }
 
 /********************************************************************/
@@ -108,7 +106,7 @@ void toggleTube()
     homeState.tube = !homeState.tube;
     updateMainPowerState();
     stateUpdated = true;
-    sendFullState();
+    Serial.print("T:"); Serial.println(homeState.tube ? 1 : 0);
 }
 
 /********************************************************************/
@@ -118,7 +116,7 @@ void togglePlug()
     homeState.plug = !homeState.plug;
     updateMainPowerState();
     stateUpdated = true;
-    sendFullState();
+    Serial.print("P:"); Serial.println(homeState.plug ? 1 : 0);
 }
 
 /********************************************************************/
@@ -128,7 +126,7 @@ void toggleFan()
     homeState.fan = !homeState.fan;
     updateMainPowerState();
     stateUpdated = true;
-    sendFullState();
+    Serial.print("F:"); Serial.println(homeState.fan ? 1 : 0);
 }
 
 /********************************************************************/
@@ -140,7 +138,7 @@ void setFanSpeed(uint8_t percent)
 
     homeState.speed = percent;
     stateUpdated = true;
-    sendFullState();
+    Serial.print("S:"); Serial.println((int)round(128.0 - (homeState.speed * 1.28)));
 }
 
 /********************************************************************/
@@ -149,14 +147,14 @@ void setCoolerState(uint8_t state)
 {
     homeState.cooler = state;
     stateUpdated = true;
-    sendFullState();
+    Serial.print("C:"); Serial.println(homeState.cooler);
 }
 
 /********************************************************************/
 
-void parseSerialLine(const String &line)
+void parseSerialLine(char *line)
 {
-    if (line.length() == 0)
+    if (strlen(line) == 0)
         return;
 
     parseStatusPacket(line);
@@ -164,36 +162,18 @@ void parseSerialLine(const String &line)
 
 /********************************************************************/
 
-bool parseStatusPacket(const String &packet)
+bool parseStatusPacket(char *packet)
 {
-    int start = 0;
-
-    while (start < packet.length())
-    {
-        int comma = packet.indexOf(',', start);
-
-        if (comma == -1)
-            comma = packet.length();
-
-        String pair = packet.substring(start, comma);
-
-        int colon = pair.indexOf(':');
-
-        if (colon != -1)
-        {
-            String key =
-                pair.substring(0, colon);
-
-            String value =
-                pair.substring(colon + 1);
-
-            key.trim();
-            value.trim();
-
+    char *pair = strtok(packet, ",");
+    while (pair != NULL) {
+        char *colon = strchr(pair, ':');
+        if (colon != NULL) {
+            *colon = '\0';
+            char *key = pair;
+            char *value = colon + 1;
             parsePair(key, value);
         }
-
-        start = comma + 1;
+        pair = strtok(NULL, ",");
     }
 
     updateMainPowerState();
@@ -205,44 +185,42 @@ bool parseStatusPacket(const String &packet)
 /********************************************************************/
 
 bool parsePair(
-    const String &key,
-    const String &value)
+    const char *key,
+    const char *value)
 {
-    int v = value.toInt();
+    int v = atoi(value);
 
-    if (key == "M")
+    if (key[0] == 'M' && key[1] == '\0')
     {
         homeState.mainPower = v;
         return true;
     }
 
-    if (key == "T")
+    if (key[0] == 'T' && key[1] == '\0')
     {
         homeState.tube = v;
         return true;
     }
 
-    if (key == "P")
+    if (key[0] == 'P' && key[1] == '\0')
     {
         homeState.plug = v;
         return true;
     }
 
-    if (key == "F")
+    if (key[0] == 'F' && key[1] == '\0')
     {
         homeState.fan = v;
         return true;
     }
 
-    if (key == "S")
+    if (key[0] == 'S' && key[1] == '\0')
     {
-        homeState.speed =
-            map(v, 128, 0, 0, 100);
-
+        homeState.speed = (uint8_t)round((128.0 - v) * 100.0 / 128.0);
         return true;
     }
 
-    if (key == "C")
+    if (key[0] == 'C' && key[1] == '\0')
     {
         homeState.cooler = v;
         return true;

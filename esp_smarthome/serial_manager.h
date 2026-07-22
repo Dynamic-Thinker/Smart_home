@@ -51,7 +51,7 @@ extern HomeState homeState;
  * Globals
  ********************************************************************/
 
-extern String serialBuffer;
+extern char serialBuffer[64];
 
 extern bool stateUpdated;
 
@@ -89,13 +89,13 @@ void setCoolerState(uint8_t state);
  * Incoming Parser
  ********************************************************************/
 
-void parseSerialLine(const String &line);
+void parseSerialLine(char *line);
 
-bool parseStatusPacket(const String &packet);
+bool parseStatusPacket(char *packet);
 
 bool parsePair(
-    const String &key,
-    const String &value
+    const char *key,
+    const char *value
 );
 
 /********************************************************************
