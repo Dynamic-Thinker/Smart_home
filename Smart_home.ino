@@ -483,27 +483,25 @@ void dis()
 
 void fan()
 {
-  if(f_state == 2){
-    if(f_1 == 0)if(millis() - f_t >= 600000)
-    {
-    f_1 = 1;
-    f_t = millis();
-    digitalWrite(f, HIGH);
+  if (f_state == 2) {
+    if (f_1 == 0 && millis() - f_t >= 600000) {
+      f_1 = 1;
+      f_t = millis();
+      digitalWrite(f, HIGH);
     }
-    else if(f_1 == 1)if(millis() - f_t >= 300000)
-    {
-    f_1 = 0;
-    f_t = millis();
-    digitalWrite(f, LOW);
+    else if (f_1 == 1 && millis() - f_t >= 300000) {
+      f_1 = 0;
+      f_t = millis();
+      digitalWrite(f, LOW);
     }
   }
-  else if(f_state == 1){
-    if(f_1 == 0){
+  else if (f_state == 1) {
+    if (f_1 == 0) {
       f_1 = 1;
       digitalWrite(f, HIGH);
     }
   }
-  else{
+  else {
     f_1 = 0;
     digitalWrite(f, LOW);
   }
