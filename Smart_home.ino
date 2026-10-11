@@ -1,4 +1,5 @@
 #include <IRremote.h>
+#include <TimerOne.h>
 #include <EEPROM.h>
 #include <BfButton.h>
 #include <LiquidCrystal.h>
@@ -13,24 +14,29 @@
 #define r3 10
 #define sw 11
 
-byte State;
 byte m = 0;
-byte dim = 0;                  // Dimming level (0-128)  0 = on, 128 = 0ff
 bool f_1 = 0;
 bool r_1 = 0;
 bool r_2 = 0;
 bool r_3 = 0;
+byte State;
 byte LastState;
 bool dis2 = 0;
 byte f_state = 2;
-volatile int error_acc = 0;
+bool stateChanged = false;
+
+byte dim = 0;                  // Dimming level (0-128)  0 = on, 128 = 0ff
+volatile int i=0;
+const byte freqStep = 75;
+volatile boolean zero_cross=0;
+
 char wStr[16] = {'0','\0'};
 unsigned long t = 0;
 unsigned long f_t = 0;
 unsigned long i_t = 0;
-bool stateChanged = false;
 bool last_r1 = 0, last_r2 = 0, last_r3 = 0;
 byte last_dim = 0, last_f_state = 2;
+
 IRrecv irrecv(ir_pin);
 decode_results results;
 LiquidCrystal lcd(A0, A1, A2, A3, A4, A5);
@@ -44,7 +50,9 @@ void setup()
   Serial.begin(9600);
   irrecv.enableIRIn();
   irrecv.blink13(false);
-  attachInterrupt(0, zero_cross_detect, RISING);    // Attach an Interupt to Pin 2 (interupt 0) for Zero Cross Detection
+  Timer1.initialize(freqStep);
+  Timer1.attachInterrupt(dim_check, freqStep);
+  attachInterrupt(0, zero_cross_detect, FALLING);    // Attach an Interupt to Pin 2 (interupt 0) for Zero Cross Detection
 
   f_t = millis();
   pinMode(sw, INPUT);
@@ -98,24 +106,28 @@ void saveState()
   EEPROM.update(4, f_state);
 }
 
-void zero_cross_detect()
-{
-  if (!r_3 || dim == 128) {
+void zero_cross_detect() {
+  if (!r_3 || dim >= 128)
+  {
+    zero_cross = false;
     digitalWrite(AC_pin, LOW);
     return;
   }
-  if (dim == 0) {
-    digitalWrite(AC_pin, HIGH);
-    return;
-  }
-  
-  int active = 128 - dim;
-  error_acc += active;
-  if (error_acc >= 128) {
-    error_acc -= 128;
-    digitalWrite(AC_pin, HIGH);
-  } else {
-    digitalWrite(AC_pin, LOW);
+  zero_cross = true;
+  i=0;
+  digitalWrite(AC_pin, LOW);
+}
+
+void dim_check() {
+  if(zero_cross == true) {
+    if(i>=dim) {
+      digitalWrite(AC_pin, HIGH);
+      delayMicroseconds(100);
+      digitalWrite(AC_pin, LOW);
+      zero_cross=false;
+      i=0;
+    }
+    else i++;
   }
 }
 
@@ -186,7 +198,7 @@ void ir_switch()
   stateChanged = false;
   if(irrecv.decode(&results)){
     
-    if(millis() - i_t >= 500){
+    if(millis() - i_t >= 280){
       if(results.value == 0xE12440BF)
       {
         r_1 = !r_1;
@@ -232,6 +244,7 @@ void ir_switch()
         last_r1 = last_r2 = last_r3 = 1;
         }
         stateChanged = true;
+        saveState();
       }
       else if(results.value == 0xE124A05F)
       {
@@ -353,6 +366,7 @@ void button(BfButton *btn, BfButton::press_pattern_t pattern)
      last_r1 = last_r2 = last_r3 = 1;
     }
     m = 0;
+    saveState();
     break;
 
    case BfButton::LONG_PRESS:
